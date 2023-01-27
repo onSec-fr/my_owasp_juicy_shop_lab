@@ -1,0 +1,18 @@
+#!/bin/bash
+sudo yum update -y
+# Install
+sudo yum install -y docker
+sudo yum install -y git
+# Enable docker service
+sudo systemctl enable docker
+sudo systemctl start docker
+# Get config file
+wget https://raw.githubusercontent.com/juice-shop/juice-shop/master/config/mozilla.yml -O /tmp/config.yml
+# Start docker container
+sudo docker pull bkimminich/juice-shop
+sudo docker run -d -e "NODE_ENV=myConfig" -v /tmp/config.yml:/juice-shop/config/myConfig.yml -p 80:3000 --name juice-shop bkimminich/juice-shop
+# Start container at each reboot
+sudo chmod +x /etc/rc.local
+sudo systemctl enable rc-local.service
+sudo systemctl start  rc-local.service
+echo 'sudo docker start juice-shop' >> /etc/rc.local
